@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fate-dark: #1a1a2e;
+  --color-fate-accent: #f1c94c;
+  --color-fate-light: #f5f5f5;
+  --color-fate-softblue: #4ea1d3;
+  --font-fate: "Noto Sans JP", sans-serif;
+}
+
+body {
+  background-color: var(--color-fate-dark);
+  color: var(--color-fate-light);
+  font-family: var(--font-fate);
+}
+
