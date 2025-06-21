@@ -1,6 +1,14 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-fn main() {
-    pomodoro_fate_lib::run()
+use pomodoro_fate_lib::init_tray;
+
+fn main() -> tauri::Result<()> {
+    tauri::Builder::default()
+        .setup(|app| {
+            init_tray::<tauri::Wry>(&app.handle())?;
+            Ok(())
+        })
+        .plugin(tauri_plugin_opener::init())
+        .run(tauri::generate_context!())
 }
