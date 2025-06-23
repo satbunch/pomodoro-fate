@@ -57,7 +57,7 @@ const App: React.FC = () => {
     `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
   const playsound = (filename: string) => {
-    const audio = new Audio(`../public/sounds/${filename}`);
+    const audio = new Audio(`/sounds/${filename}`);
     audio.play().catch((e) => {
       console.error("音声再生に失敗しました", e);
     });

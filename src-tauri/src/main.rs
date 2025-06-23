@@ -10,5 +10,6 @@ fn main() -> tauri::Result<()> {
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_log::Builder::new().build())
         .run(tauri::generate_context!())
 }
