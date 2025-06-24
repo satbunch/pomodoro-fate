@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Modal from "./components/Modal";
+import { invoke } from "@tauri-apps/api/core";
 
 type Mode = "work" | "break";
 
@@ -13,17 +14,23 @@ const App: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
+  const totalSecs = mode === "work" ? WORK_DURATION : BREAK_DURATION;
+
   useEffect(() => {
     if (!isRunning) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
+        const next = prev <= 1 ? 0 : prev - 1;
+        const elapsed = totalSecs - next;
+        invoke("update_timer", { elapsed, total: totalSecs })
+          .then(() => console.log("[Tauri] update_timer invoke OK", next))
+          .catch((e) => console.error("[Tauri] update_timer invoke NG", e));
         if (prev <= 1) {
           clearInterval(timer);
           handlePhaseEnd();
-          return 0;
         }
-        return prev - 1;
+        return next;
       });
     }, 1000);
 
@@ -51,6 +58,11 @@ const App: React.FC = () => {
     setTimeLeft(nextMode === "work" ? WORK_DURATION : BREAK_DURATION);
     setShowModal(true);
     setIsRunning(false);
+
+    const newTotal = nextMode === "work" ? WORK_DURATION : BREAK_DURATION;
+    invoke("update_timer", { elapsed: 0, total: newTotal }).catch(
+      console.error,
+    );
   };
 
   const formatTime = (s: number) =>
