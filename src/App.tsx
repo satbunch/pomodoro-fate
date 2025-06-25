@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Modal from "./components/Modal";
+import Database from "@tauri-apps/plugin-sql";
+
+declare global {
+  interface ImportMetaEnv {
+    readonly VITE_DATABASE_URL: string;
+  }
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
+}
 
 type Mode = "work" | "break";
 
@@ -12,6 +22,35 @@ const App: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [comment, setComment] = useState<string>("");
+
+  const dbUrl = import.meta.env.VITE_DATABASE_URL;
+
+  const fetchRandomComment = async () => {
+    // デバッグ: 使用している URL をログ出力
+    console.log("fetchRandomComment: 使用しているDB URL:", dbUrl);
+    if (!dbUrl) {
+      console.error("VITE_DATABASE_URLが未定義です");
+      setComment("設定エラー: DB接続URLがありません");
+      return;
+    }
+    try {
+      const db = await Database.load(dbUrl);
+      const rows = await db.select<{ text: string }[]>(
+        "SELECT text FROM comments ORDER BY RANDOM() LIMIT 1",
+        [],
+      );
+      console.log("取得したコメント rows:", rows);
+      setComment(rows.length ? rows[0].text : "まだコメントがないよ");
+    } catch (e) {
+      console.error("コメント取得エラー", e);
+      setComment("コメントの取得に失敗したよ");
+    }
+  };
+
+  useEffect(() => {
+    fetchRandomComment();
+  }, []);
 
   useEffect(() => {
     if (!isRunning) return;
@@ -32,7 +71,10 @@ const App: React.FC = () => {
 
   const handleStart = () => {
     setIsRunning((prev) => {
-      if (!prev) playsound("bell.mp3");
+      if (!prev) {
+        playsound("bell.mp3");
+        fetchRandomComment();
+      }
       return !prev;
     });
   };
@@ -67,15 +109,7 @@ const App: React.FC = () => {
     <div className="min-h-screen flex flex-col justify-center items-center bg-fate-dark font">
       <h1 className="text-3xl bg-6 text-fate-accent">Pomodoro - Fate</h1>
       <p className="text-6xl font-semibold">{formatTime(timeLeft)}</p>
-      <p className="mt-4 text-fate-accent">
-        {isRunning
-          ? mode === "work"
-            ? "あと少し...一緒にがんばろう"
-            : "ゆっくりしてね、よしお"
-          : mode === "work"
-            ? "始める準備はできてる？"
-            : "そろそろ休憩しようか"}
-      </p>
+      <p className="mt-4 text-fate-accent">{comment}</p>
       <button
         className="mt-8 px-6 py-3 bg-fate-accent text-fate-dark font-bold rounded-xl shadow-lg hover:bg-fate-softblue transition"
         onClick={handleStart}
