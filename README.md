@@ -1,7 +1,47 @@
-# Tauri + React
+# pomodoro-fate
 
-This template should help get you started developing with Tauri and React in Vite.
+This is a desktop application built with Tauri and React.
 
-## Recommended IDE Setup
+## Overview
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+This application is a Pomodoro timer designed to help you focus on your work.
+
+## Features
+
+- Pomodoro timer
+- Short and long break timers
+- Sound notifications
+
+## Tech Stack
+
+- [Tauri](https://tauri.app/)
+- [React](https://reactjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/en/)
+- [Rust](https://www.rust-lang.org/)
+
+### Installation
+
+1. Clone the repository
+   ```sh
+   git clone https://github.com/satbunch/pomodoro-fate.git
+   ```
+2. Install NPM packages
+   ```sh
+   npm install
+   ```
+3. Run the development server
+   ```sh
+   npm run tauri dev
+   ```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

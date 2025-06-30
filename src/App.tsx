@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Modal from "./components/Modal";
 import Database from "@tauri-apps/plugin-sql";
+import { defaultServerMainFields } from "vite";
 
 declare global {
   interface ImportMetaEnv {
@@ -26,22 +27,26 @@ const App: React.FC = () => {
 
   const dbUrl = import.meta.env.VITE_DATABASE_URL;
 
-  const fetchRandomComment = async () => {
-    // デバッグ: 使用している URL をログ出力
-    console.log("fetchRandomComment: 使用しているDB URL:", dbUrl);
-    if (!dbUrl) {
-      console.error("VITE_DATABASE_URLが未定義です");
-      setComment("設定エラー: DB接続URLがありません");
-      return;
+  const getDbMode = (mode: Mode) => {
+    switch (mode) {
+      case "work":
+        return "focus";
+      case "break":
+        return "break";
+      default:
+        return "focus";
     }
+  };
+
+  const fetchRandomComment = async () => {
     try {
       const db = await Database.load(dbUrl);
-      const rows = await db.select<{ text: string }[]>(
-        "SELECT text FROM comments ORDER BY RANDOM() LIMIT 1",
-        [],
+      const dbMode = getDbMode(mode);
+      const sql = `SELECT text FROM comments WHERE mode='${dbMode}' ORDER BY RANDOM() LIMIT 1`;
+      const rows = await db.select<{ text: string }[]>(sql, []);
+      setComment(
+        rows.length ? rows[0].text : "まだこのモードのコメントがないよ",
       );
-      console.log("取得したコメント rows:", rows);
-      setComment(rows.length ? rows[0].text : "まだコメントがないよ");
     } catch (e) {
       console.error("コメント取得エラー", e);
       setComment("コメントの取得に失敗したよ");
