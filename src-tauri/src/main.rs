@@ -1,13 +1,12 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use dotenvy::dotenv;
 use std::env;
 use tauri::{generate_context, Builder};
 use tauri_plugin_sql::{Builder as SqlBuilder, Migration, MigrationKind};
 
 fn main() {
-    dotenv().ok();
+    dotenvy::from_filename(".env").ok();
 
     let database_url =
         env::var("VITE_DATABASE_URL").expect("`.env`にDATABASE_URLが設定されていません");
